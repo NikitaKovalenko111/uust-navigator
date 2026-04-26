@@ -1,0 +1,28 @@
+definitions:
+  example_dto.HealthCheckResponse:
+    properties:
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: Example API Server
+  title: Example API
+  version: "0.1"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Checks health of the server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example_dto.HealthCheckResponse'
+      summary: Check health
+      tags:
+      - health
+swagger: "2.0"

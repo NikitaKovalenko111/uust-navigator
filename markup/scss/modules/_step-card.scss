@@ -1,0 +1,145 @@
+@use '../variables' as *;
+
+.step-card {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.18s;
+  transition: box-shadow $transition-base, transform $transition-base;
+}
+
+.step-card__title {
+  font-family: $font-display;
+  font-size: 16px;
+  color: $color-brand;
+}
+
+.step-card__figure {
+  display: grid;
+  gap: 8px;
+}
+
+.step-card__image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid $color-border;
+  transition: transform $transition-base;
+}
+
+.step-card__description {
+  font-size: 13px;
+  color: $color-text;
+}
+
+.step-card__list {
+  display: grid;
+  gap: 6px;
+  counter-reset: steps;
+}
+
+.step-card__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f9f8ff;
+  color: $color-text-muted;
+  font-size: 12px;
+  transition: transform $transition-fast, background-color $transition-fast, color $transition-fast;
+}
+
+.step-card__item::before {
+  counter-increment: steps;
+  content: counter(steps);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: $color-white;
+  background: #b9b0dd;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.step-card__item--done {
+  color: $color-brand;
+  background: #efeafd;
+}
+
+.step-card__item--done::before {
+  background: $color-success;
+}
+
+.step-card__item--active {
+  color: $color-brand;
+  background: $color-brand-soft;
+}
+
+.step-card__item--active::before {
+  background: $color-brand;
+}
+
+@media (hover: hover) {
+  .step-card:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-card-hover;
+  }
+
+  .step-card:hover .step-card__image {
+    transform: scale(1.02);
+  }
+
+  .step-card__item:hover {
+    transform: translateX(2px);
+    background: #f0ebff;
+    color: $color-brand;
+  }
+}
+
+@media (min-width: $bp-tablet) {
+  .step-card {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .step-card__title {
+    grid-column: 1 / -1;
+    font-size: 18px;
+  }
+
+  .step-card__figure {
+    gap: 10px;
+  }
+
+  .step-card__image {
+    height: 170px;
+  }
+
+  .step-card__list {
+    align-self: stretch;
+    align-content: start;
+  }
+
+  .step-card__item {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}
+
+@media (min-width: $bp-desktop) {
+  .step-card__image {
+    height: 190px;
+  }
+}

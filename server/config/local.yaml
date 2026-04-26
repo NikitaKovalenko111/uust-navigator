@@ -1,0 +1,11 @@
+env: "local" # dev, prod
+http_server:
+    http_address: localhost
+    http_timeout: 4s
+    http_idle_timeout: 60s
+storage:
+    db_port: 12345
+    db_name: example
+    db_host: localhost
+    db_pass: examplepass
+    db_user: example
