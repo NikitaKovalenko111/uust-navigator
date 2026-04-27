@@ -5,9 +5,10 @@ import (
 	"uust-navigator/internal/logger/sl"
 	"uust-navigator/internal/middleware"
 	"uust-navigator/internal/services"
+	"uust-navigator/internal/storage"
 
 	//redisStorage "uust-navigator/internal/storage/redis"
-	"uust-navigator/internal/storage/repositories"
+	"uust-navigator/internal/storage/elastic"
 	"uust-navigator/internal/transport/http"
 
 	"github.com/gofiber/contrib/swagger"
@@ -40,11 +41,13 @@ func New(cfg *config.Config) *App {
 		panic("Couldn't connect to redis!")
 	}*/
 
-	repos := repositories.Init()
+	elastic := elastic.Init(cfg)
+
+	storage := storage.Init(elastic)
 
 	logger.Info("Successfully inited repositories!")
 
-	services := services.Init(repos, cfg)
+	services := services.Init(storage.Repositories, cfg)
 
 	logger.Info("Successfully inited services!")
 

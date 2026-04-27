@@ -1,9 +1,8 @@
 package models
 
 type Point struct {
-	Id          string
-	Description string
-	Cabinets    []string
-	Tags        []string
-	Photo       string
+	Description string   `json:"description"`
+	Cabinets    []string `json:"nums"`
+	Tags        []string `json:"tags"`
+	Photo       string   `json:"photo"`
 }
