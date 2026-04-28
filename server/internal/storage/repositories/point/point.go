@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"uust-navigator/internal/domain/models"
 	"uust-navigator/internal/storage/elastic"
 )
 
 type PointRepo struct {
-	Data    []models.Point
-	Elastic *elastic.ElasticSearch
+	data    map[string]models.Point
+	elastic *elastic.ElasticSearch
 }
 
 type Hit struct {
@@ -34,37 +35,37 @@ type SearchResponse struct {
 }
 
 func Init(elastic *elastic.ElasticSearch) *PointRepo {
-	content, err := os.ReadFile("./../../../data2.json")
+	content, err := os.ReadFile("data2.json")
 	if err != nil {
-		panic("Error while reading json...")
+		panic(fmt.Sprintf("%s %s", "Error while reading json: ", err.Error()))
 	}
 
-	var payload []models.Point
+	var payload map[string]models.Point
 	err = json.Unmarshal(content, &payload)
 	if err != nil {
-		panic("Error during unmarshal...")
+		panic(fmt.Sprintf("%s %s", "Error during unmarshal: ", err.Error()))
 	}
 
 	return &PointRepo{
-		Data:    payload,
-		Elastic: elastic,
+		data:    payload,
+		elastic: elastic,
 	}
 }
 
 func (r *PointRepo) IndexData() error {
-	jsonData, err := json.Marshal(r.Data)
+	jsonData, err := json.Marshal(r.data)
 
 	if err != nil {
 		return err
 	}
 
-	res, err := r.Elastic.Client.Index("points", bytes.NewReader(jsonData), r.Elastic.Client.Index.WithDocumentID("1"))
+	res, err := r.elastic.Client.Index("points", bytes.NewReader(jsonData), r.elastic.Client.Index.WithDocumentID("1"))
 	if err != nil {
 		return err
 	}
 	res.Body.Close()
 
-	r.Elastic.Client.Indices.Refresh(r.Elastic.Client.Indices.Refresh.WithIndex("points"))
+	r.elastic.Client.Indices.Refresh(r.elastic.Client.Indices.Refresh.WithIndex("points"))
 
 	return nil
 }
@@ -86,11 +87,11 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 		return nil, err
 	}
 
-	res, err := r.Elastic.Client.Search(
-		r.Elastic.Client.Search.WithContext(context.Background()),
-		r.Elastic.Client.Search.WithIndex("posts"),
-		r.Elastic.Client.Search.WithBody(&buf),
-		r.Elastic.Client.Search.WithTrackTotalHits(true),
+	res, err := r.elastic.Client.Search(
+		r.elastic.Client.Search.WithContext(context.Background()),
+		r.elastic.Client.Search.WithIndex("posts"),
+		r.elastic.Client.Search.WithBody(&buf),
+		r.elastic.Client.Search.WithTrackTotalHits(true),
 	)
 
 	if err != nil {
@@ -110,4 +111,15 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 	}
 
 	return sources, nil
+}
+
+func (r *PointRepo) GetPointById(id string) *models.Point {
+	var point = models.Point{
+		Description: r.data[id].Description,
+		Cabinets:    r.data[id].Cabinets,
+		Tags:        r.data[id].Tags,
+		Photo:       r.data[id].Photo,
+	}
+
+	return &point
 }

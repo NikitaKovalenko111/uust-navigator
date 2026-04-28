@@ -15,7 +15,6 @@ import (
 //	@description	Example API Server
 
 // BasePath /
-
 func main() {
 	cfg := config.MustLoad()
 

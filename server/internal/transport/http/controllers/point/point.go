@@ -16,6 +16,27 @@ func Init(pointService *point_service.PointService) *PointController {
 	}
 }
 
-func (c *PointController) RegisterRoutes(router *fiber.App) {
+func (c *PointController) RegisterRoutes(router fiber.Router) {
+	router.Get("/:id", c.GetPointById)
+	router.Get("/", c.FindPoints)
+}
 
+func (controller *PointController) GetPointById(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	point := controller.PointService.GetPointById(id)
+
+	return c.JSON(point)
+}
+
+func (controller *PointController) FindPoints(c *fiber.Ctx) error {
+	query := c.Query("query")
+
+	points, err := controller.PointService.FindPoints(query)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(points)
 }

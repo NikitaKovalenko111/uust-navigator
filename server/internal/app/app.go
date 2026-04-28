@@ -33,8 +33,6 @@ func New(cfg *config.Config) *App {
 	logger.Info("Logger is enabled")
 	logger.Debug("Debug is enabled")
 
-	logger.Info("Successfully inited storage!")
-
 	//redisClient, err := redisStorage.NewClient(context.Background(), cfg)
 
 	/*if err != nil {
@@ -43,7 +41,14 @@ func New(cfg *config.Config) *App {
 
 	elastic := elastic.Init(cfg)
 
+	logger.Info("Successfully inited elastic!")
+
 	storage := storage.Init(elastic)
+	err := storage.Repositories.PointRepo.IndexData()
+
+	if err != nil {
+		panic(err.Error())
+	}
 
 	logger.Info("Successfully inited repositories!")
 
