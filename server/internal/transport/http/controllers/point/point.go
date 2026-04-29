@@ -1,6 +1,7 @@
 package point_controller
 
 import (
+	"log/slog"
 	point_service "uust-navigator/internal/services/usecase/point"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,6 +9,7 @@ import (
 
 type PointController struct {
 	PointService *point_service.PointService
+	logger       *slog.Logger
 }
 
 func Init(pointService *point_service.PointService) *PointController {

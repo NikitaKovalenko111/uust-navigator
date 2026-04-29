@@ -39,11 +39,11 @@ func New(cfg *config.Config) *App {
 		panic("Couldn't connect to redis!")
 	}*/
 
-	elastic := elastic.Init(cfg)
+	elastic := elastic.Init(cfg, logger)
 
 	logger.Info("Successfully inited elastic!")
 
-	storage := storage.Init(elastic)
+	storage := storage.Init(elastic, logger)
 	err := storage.Repositories.PointRepo.IndexData()
 
 	if err != nil {

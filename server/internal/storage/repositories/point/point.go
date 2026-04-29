@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"uust-navigator/internal/domain/models"
 	"uust-navigator/internal/storage/elastic"
@@ -13,6 +14,7 @@ import (
 type PointRepo struct {
 	data    map[string]models.Point
 	elastic *elastic.ElasticSearch
+	logger  *slog.Logger
 }
 
 type Hit struct {
@@ -34,7 +36,7 @@ type SearchResponse struct {
 	Hits HitsWrapper `json:"hits"`
 }
 
-func Init(elastic *elastic.ElasticSearch) *PointRepo {
+func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *PointRepo {
 	content, err := os.ReadFile("data2.json")
 	if err != nil {
 		panic(fmt.Sprintf("%s %s", "Error while reading json: ", err.Error()))
@@ -49,23 +51,24 @@ func Init(elastic *elastic.ElasticSearch) *PointRepo {
 	return &PointRepo{
 		data:    payload,
 		elastic: elastic,
+		logger:  logger,
 	}
 }
 
 func (r *PointRepo) IndexData() error {
-	jsonData, err := json.Marshal(r.data)
-
-	if err != nil {
-		return err
+	for i, item := range r.data {
+		b, _ := json.Marshal(item)
+		res, err := r.elastic.Client.Index(
+			"points",
+			bytes.NewReader(b),
+			r.elastic.Client.Index.WithDocumentID(i),
+		)
+		if err != nil {
+			return err
+		}
+		res.Body.Close()
 	}
-
-	res, err := r.elastic.Client.Index("points", bytes.NewReader(jsonData), r.elastic.Client.Index.WithDocumentID("1"))
-	if err != nil {
-		return err
-	}
-	res.Body.Close()
-
-	r.elastic.Client.Indices.Refresh(r.elastic.Client.Indices.Refresh.WithIndex("points"))
+	_, _ = r.elastic.Client.Indices.Refresh(r.elastic.Client.Indices.Refresh.WithIndex("points"))
 
 	return nil
 }
@@ -74,9 +77,10 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 	queryStr := map[string]interface{}{
 		"query": map[string]interface{}{
 			"multi_match": map[string]interface{}{
-				"query":  query,
-				"fields": []string{"description", "nums", "tags"},
-				"type":   "best_fields",
+				"query":     query,
+				"fields":    []string{"description", "nums", "tags"},
+				"type":      "best_fields",
+				"fuzziness": "AUTO",
 			},
 		},
 		"size": 10,
@@ -89,7 +93,7 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 
 	res, err := r.elastic.Client.Search(
 		r.elastic.Client.Search.WithContext(context.Background()),
-		r.elastic.Client.Search.WithIndex("posts"),
+		r.elastic.Client.Search.WithIndex("points"),
 		r.elastic.Client.Search.WithBody(&buf),
 		r.elastic.Client.Search.WithTrackTotalHits(true),
 	)

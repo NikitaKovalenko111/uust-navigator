@@ -9,7 +9,6 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      # For quick local dev you can disable security, but it's not recommended for networked machines.
       - xpack.security.enabled=false
       - xpack.security.http.ssl.enabled=false
     ulimits:
@@ -24,21 +23,6 @@ services:
     networks:
       - esnet
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.3
-    container_name: kibana-local
-    depends_on:
-      - elasticsearch
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      # If ES security is enabled, set credentials here:
-      # - ELASTICSEARCH_USERNAME=elastic
-      # - ELASTICSEARCH_PASSWORD=changeme
-    ports:
-      - "5601:5601"
-    networks:
-      - esnet
-
   api:
     container_name: server-api
     depends_on:
@@ -48,6 +32,8 @@ services:
     build: 
       context: ./server
       dockerfile: Dockerfile
+    networks:
+      - esnet
 
 volumes:
   esdata:
