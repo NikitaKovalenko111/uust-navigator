@@ -1,8 +1,34 @@
 definitions:
-  example_dto.HealthCheckResponse:
+  models.PathResponse:
     properties:
-      status:
+      path:
+        items:
+          type: string
+        type: array
+      path_depth:
         type: integer
+    type: object
+  models.Point:
+    properties:
+      description:
+        type: string
+      nums:
+        items:
+          type: string
+        type: array
+      photo:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+  models.PointResponse:
+    properties:
+      photo_base64:
+        type: string
+      point:
+        $ref: '#/definitions/models.Point'
     type: object
 info:
   contact: {}
@@ -10,19 +36,72 @@ info:
   title: Example API
   version: "0.1"
 paths:
-  /health:
+  /path:
     get:
       consumes:
       - application/json
-      description: Checks health of the server.
+      description: Finds path by start point and end point
+      parameters:
+      - description: id of start point of path
+        in: query
+        name: start
+        required: true
+        type: string
+      - description: id of end point of path
+        in: query
+        name: end
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/example_dto.HealthCheckResponse'
-      summary: Check health
+            $ref: '#/definitions/models.PathResponse'
+      summary: Find path
       tags:
-      - health
+      - path
+  /points/:
+    get:
+      consumes:
+      - application/json
+      description: Finds points by query matches in tags, description and cabinets
+        nearby
+      parameters:
+      - description: query for searching points
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Point'
+      summary: Find points by query
+      tags:
+      - points
+  /points/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Gets point by id from data and returns to user
+      parameters:
+      - description: Point ID
+        in: path
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PointResponse'
+      summary: Get point by id
+      tags:
+      - points
 swagger: "2.0"

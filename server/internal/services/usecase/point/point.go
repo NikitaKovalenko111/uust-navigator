@@ -1,6 +1,10 @@
 package point_service
 
 import (
+	"encoding/base64"
+	"fmt"
+	"io"
+	"os"
 	"uust-navigator/internal/domain/models"
 	point_repo "uust-navigator/internal/storage/repositories/point"
 )
@@ -15,10 +19,28 @@ func Init(pointRepo *point_repo.PointRepo) *PointService {
 	}
 }
 
-func (s *PointService) GetPointById(id string) *models.Point {
+func (s *PointService) GetPointById(id string) (*models.PointResponse, error) {
 	point := s.pointRepo.GetPointById(id)
 
-	return point
+	f, err := os.Open(fmt.Sprintf("./paths/%s", point.Photo))
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer f.Close()
+	buf, err := io.ReadAll(f)
+
+	if err != nil {
+		return nil, err
+	}
+
+	photoEncrypted := base64.StdEncoding.EncodeToString(buf)
+
+	return &models.PointResponse{
+		PhotoEnc: photoEncrypted,
+		Point:    point,
+	}, nil
 }
 
 func (s *PointService) FindPoints(query string) ([]models.Point, error) {

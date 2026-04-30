@@ -1,6 +1,7 @@
 package path_service
 
 import (
+	"strings"
 	"uust-navigator/internal/domain/models"
 	path_repo "uust-navigator/internal/storage/repositories/path"
 )
@@ -15,8 +16,11 @@ func Init(repo *path_repo.PathRepo) *PathService {
 	}
 }
 
-func (s *PathService) FindPath(startPoint string, endPoint string) *models.Path {
+func (s *PathService) FindPath(startPoint string, endPoint string) *models.PathResponse {
 	path := s.PathRepo.FindPath(startPoint, endPoint)
 
-	return path
+	return &models.PathResponse{
+		Depth:     path.Depth,
+		PathArray: strings.Split(path.PathString, "/"),
+	}
 }

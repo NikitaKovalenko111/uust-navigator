@@ -24,6 +24,6 @@ func Init(services *services.Services, logger *slog.Logger) *Controllers {
 }
 
 func (c *Controllers) RegisterRoutes(app *fiber.App) {
-	c.PathController.RegisterRoutes()
+	c.PathController.RegisterRoutes(app.Group("/path"))
 	c.PointController.RegisterRoutes(app.Group("/points"))
 }

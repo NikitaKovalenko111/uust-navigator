@@ -6,3 +6,8 @@ type Point struct {
 	Tags        []string `json:"tags"`
 	Photo       string   `json:"photo"`
 }
+
+type PointResponse struct {
+	PhotoEnc string `json:"photo_base64"`
+	Point    *Point `json:"point"`
+}

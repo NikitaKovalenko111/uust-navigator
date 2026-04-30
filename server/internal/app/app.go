@@ -23,10 +23,10 @@ type App struct {
 	config *config.Config
 }
 
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
+// @description				Type "Bearer" followed by a space and JWT token.
 func New(cfg *config.Config) *App {
 	logger := sl.InitLogger(cfg.Env)
 

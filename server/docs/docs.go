@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
+        "/path": {
             "get": {
-                "description": "Checks health of the server.",
+                "description": "Finds path by start point and end point",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,14 +25,93 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "health"
+                    "path"
                 ],
-                "summary": "Check health",
+                "summary": "Find path",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of start point of path",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of end point of path",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/example_dto.HealthCheckResponse"
+                            "$ref": "#/definitions/models.PathResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/points/": {
+            "get": {
+                "description": "Finds points by query matches in tags, description and cabinets nearby",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "points"
+                ],
+                "summary": "Find points by query",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query for searching points",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Point"
+                        }
+                    }
+                }
+            }
+        },
+        "/points/{id}": {
+            "get": {
+                "description": "Gets point by id from data and returns to user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "points"
+                ],
+                "summary": "Get point by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Point ID",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointResponse"
                         }
                     }
                 }
@@ -40,11 +119,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "example_dto.HealthCheckResponse": {
+        "models.PathResponse": {
             "type": "object",
             "properties": {
-                "status": {
+                "path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "path_depth": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Point": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "nums": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "photo": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.PointResponse": {
+            "type": "object",
+            "properties": {
+                "photo_base64": {
+                    "type": "string"
+                },
+                "point": {
+                    "$ref": "#/definitions/models.Point"
                 }
             }
         }
