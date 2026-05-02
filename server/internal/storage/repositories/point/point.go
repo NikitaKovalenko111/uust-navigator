@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"os"
 	"sort"
+	domain_errors "uust-navigator/internal/domain/errors"
 	"uust-navigator/internal/domain/models"
 	"uust-navigator/internal/storage/elastic"
 )
@@ -15,7 +15,6 @@ import (
 type PointRepo struct {
 	data    map[string]models.Point
 	elastic *elastic.ElasticSearch
-	logger  *slog.Logger
 }
 
 type Hit struct {
@@ -37,7 +36,7 @@ type SearchResponse struct {
 	Hits HitsWrapper `json:"hits"`
 }
 
-func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *PointRepo {
+func Init(elastic *elastic.ElasticSearch) *PointRepo {
 	content, err := os.ReadFile("data2.json")
 	if err != nil {
 		panic(fmt.Sprintf("%s %s", "Error while reading json: ", err.Error()))
@@ -64,7 +63,6 @@ func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *PointRepo {
 	return &PointRepo{
 		data:    data,
 		elastic: elastic,
-		logger:  logger,
 	}
 }
 
@@ -77,7 +75,7 @@ func (r *PointRepo) IndexData() error {
 			r.elastic.Client.Index.WithDocumentID(item.Id),
 		)
 		if err != nil {
-			return err
+			return fmt.Errorf("%w: %s", domain_errors.ErrInternalServer, err.Error())
 		}
 		res.Body.Close()
 	}
@@ -101,7 +99,7 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(queryStr); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s", domain_errors.ErrInternalServer, err.Error())
 	}
 
 	res, err := r.elastic.Client.Search(
@@ -112,14 +110,14 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s", domain_errors.ErrInternalServer, err.Error())
 	}
 
 	defer res.Body.Close()
 
 	var sr SearchResponse
 	if err := json.NewDecoder(res.Body).Decode(&sr); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s", domain_errors.ErrInternalServer, err.Error())
 	}
 
 	sources := make([]models.Point, 0, len(sr.Hits.Hits))
@@ -142,7 +140,7 @@ func (r *PointRepo) GetPointById(id string) *models.Point {
 	return &point
 }
 
-func (r *PointRepo) GetAllPoints() ([]models.Point, error) {
+func (r *PointRepo) GetAllPoints() []models.Point {
 	points := make([]models.Point, 0, len(r.data))
 
 	for _, value := range r.data {
@@ -159,5 +157,5 @@ func (r *PointRepo) GetAllPoints() ([]models.Point, error) {
 		return points[i].Description < points[j].Description
 	})
 
-	return points, nil
+	return points
 }

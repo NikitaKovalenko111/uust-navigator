@@ -1,4 +1,11 @@
 definitions:
+  http_errors.HTTPError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
   models.PathResponse:
     properties:
       path:
@@ -34,9 +41,9 @@ definitions:
     type: object
 info:
   contact: {}
-  description: Example API Server
-  title: Example API
-  version: "0.1"
+  description: API Docs of UUST Navigator
+  title: UUST Navigator
+  version: "1.0"
 paths:
   /path/navigate:
     get:
@@ -83,6 +90,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Point'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http_errors.HTTPError'
       summary: Find points by query
       tags:
       - points
@@ -103,6 +114,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.PointResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http_errors.HTTPError'
       summary: Get point by id
       tags:
       - points

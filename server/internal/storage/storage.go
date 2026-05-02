@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"log/slog"
 	"uust-navigator/internal/storage/elastic"
 	"uust-navigator/internal/storage/repositories"
 
@@ -12,9 +11,9 @@ type Storage struct {
 	Repositories *repositories.Repos
 }
 
-func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *Storage {
+func Init(elastic *elastic.ElasticSearch) *Storage {
 	storage := Storage{
-		Repositories: repositories.Init(elastic, logger),
+		Repositories: repositories.Init(elastic),
 	}
 
 	return &storage

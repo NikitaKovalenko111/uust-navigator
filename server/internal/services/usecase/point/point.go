@@ -53,12 +53,8 @@ func (s *PointService) FindPoints(query string) ([]models.Point, error) {
 	return points, nil
 }
 
-func (s *PointService) GetAllPoints() ([]models.Point, error) {
-	points, err := s.pointRepo.GetAllPoints()
+func (s *PointService) GetAllPoints() []models.Point {
+	points := s.pointRepo.GetAllPoints()
 
-	if err != nil {
-		return nil, err
-	}
-
-	return points, nil
+	return points
 }

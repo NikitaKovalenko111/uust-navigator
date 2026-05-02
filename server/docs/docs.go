@@ -82,6 +82,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Point"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http_errors.HTTPError"
+                        }
                     }
                 }
             }
@@ -113,12 +119,29 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.PointResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http_errors.HTTPError"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "http_errors.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.PathResponse": {
             "type": "object",
             "properties": {
@@ -175,12 +198,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.1",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Example API",
-	Description:      "Example API Server",
+	Title:            "UUST Navigator",
+	Description:      "API Docs of UUST Navigator",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

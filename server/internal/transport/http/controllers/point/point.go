@@ -1,8 +1,11 @@
 package point_controller
 
 import (
+	"errors"
 	"log/slog"
+	domain_errors "uust-navigator/internal/domain/errors"
 	point_service "uust-navigator/internal/services/usecase/point"
+	http_errors "uust-navigator/internal/transport/http/errors"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,14 +27,20 @@ func (c *PointController) RegisterRoutes(router fiber.Router) {
 	router.Get("/", c.FindPoints)
 }
 
+// GetAllPoints godoc
+//
+//	@Summary		Get all points
+//	@Description	Gets all points from data and returns to user
+//	@Tags			points
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.PointResponse
+//	@Failure		500 {object}	http_errors.HTTPError
+//	@Router			/points/{id} [get]
 func (controller *PointController) GetAllPoints(c *fiber.Ctx) error {
-	points, err := controller.PointService.GetAllPoints()
+	points := controller.PointService.GetAllPoints()
 
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(points)
+	return c.Status(fiber.StatusOK).JSON(points)
 }
 
 // GetPointById godoc
@@ -43,6 +52,7 @@ func (controller *PointController) GetAllPoints(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Param			id	path		int	string	"Point ID"
 //	@Success		200	{object}	models.PointResponse
+//	@Failure		500 {object}	http_errors.HTTPError
 //	@Router			/points/{id} [get]
 func (controller *PointController) GetPointById(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -50,10 +60,17 @@ func (controller *PointController) GetPointById(c *fiber.Ctx) error {
 	point, err := controller.PointService.GetPointById(id)
 
 	if err != nil {
-		return err
+		controller.logger.Error(err.Error())
+
+		if errors.Is(err, domain_errors.ErrInternalServer) {
+			return c.Status(fiber.ErrInternalServerError.Code).JSON(http_errors.HTTPError{
+				Message: domain_errors.ErrInternalServer.Error(),
+				Code:    fiber.ErrInternalServerError.Code,
+			})
+		}
 	}
 
-	return c.JSON(point)
+	return c.Status(fiber.StatusOK).JSON(point)
 }
 
 // FindPoints godoc
@@ -65,6 +82,7 @@ func (controller *PointController) GetPointById(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Param			query	query		string	true	"query for searching points"
 //	@Success		200		{object}	models.Point
+//	@Failure		500 {object}	http_errors.HTTPError
 //	@Router			/points/ [get]
 func (controller *PointController) FindPoints(c *fiber.Ctx) error {
 	query := c.Query("query")
@@ -72,8 +90,15 @@ func (controller *PointController) FindPoints(c *fiber.Ctx) error {
 	points, err := controller.PointService.FindPoints(query)
 
 	if err != nil {
-		return err
+		controller.logger.Error(err.Error())
+
+		if errors.Is(err, domain_errors.ErrInternalServer) {
+			return c.Status(fiber.ErrInternalServerError.Code).JSON(http_errors.HTTPError{
+				Message: domain_errors.ErrInternalServer.Error(),
+				Code:    fiber.ErrInternalServerError.Code,
+			})
+		}
 	}
 
-	return c.JSON(points)
+	return c.Status(fiber.StatusOK).JSON(points)
 }

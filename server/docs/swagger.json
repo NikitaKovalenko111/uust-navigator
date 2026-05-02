@@ -1,10 +1,10 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Example API Server",
-        "title": "Example API",
+        "description": "API Docs of UUST Navigator",
+        "title": "UUST Navigator",
         "contact": {},
-        "version": "0.1"
+        "version": "1.0"
     },
     "paths": {
         "/path/navigate": {
@@ -74,6 +74,12 @@
                         "schema": {
                             "$ref": "#/definitions/models.Point"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http_errors.HTTPError"
+                        }
                     }
                 }
             }
@@ -105,12 +111,29 @@
                         "schema": {
                             "$ref": "#/definitions/models.PointResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http_errors.HTTPError"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "http_errors.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.PathResponse": {
             "type": "object",
             "properties": {

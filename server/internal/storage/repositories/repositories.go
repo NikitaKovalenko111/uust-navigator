@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"log/slog"
 	"uust-navigator/internal/storage/elastic"
 	path_repo "uust-navigator/internal/storage/repositories/path"
 	point_repo "uust-navigator/internal/storage/repositories/point"
@@ -12,9 +11,9 @@ type Repos struct {
 	PathRepo  *path_repo.PathRepo
 }
 
-func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *Repos {
+func Init(elastic *elastic.ElasticSearch) *Repos {
 	return &Repos{
-		PointRepo: point_repo.Init(elastic, logger),
+		PointRepo: point_repo.Init(elastic),
 		PathRepo:  path_repo.Init(),
 	}
 }

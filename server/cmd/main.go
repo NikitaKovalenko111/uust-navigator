@@ -10,9 +10,9 @@ import (
 	_ "uust-navigator/docs"
 )
 
-//	@title			Example API
-//	@version		0.1
-//	@description	Example API Server
+//	@title			UUST Navigator
+//	@version		1.0
+//	@description	API Docs of UUST Navigator
 
 // BasePath /
 func main() {

@@ -7,7 +7,6 @@ import (
 	"uust-navigator/internal/services"
 	"uust-navigator/internal/storage"
 
-	//redisStorage "uust-navigator/internal/storage/redis"
 	"uust-navigator/internal/storage/elastic"
 	"uust-navigator/internal/transport/http"
 
@@ -23,27 +22,17 @@ type App struct {
 	config *config.Config
 }
 
-// @securityDefinitions.apikey	ApiKeyAuth
-// @in							header
-// @name						Authorization
-// @description				Type "Bearer" followed by a space and JWT token.
 func New(cfg *config.Config) *App {
 	logger := sl.InitLogger(cfg.Env)
 
 	logger.Info("Logger is enabled")
 	logger.Debug("Debug is enabled")
 
-	//redisClient, err := redisStorage.NewClient(context.Background(), cfg)
-
-	/*if err != nil {
-		panic("Couldn't connect to redis!")
-	}*/
-
 	elastic := elastic.Init(cfg, logger)
 
 	logger.Info("Successfully inited elastic!")
 
-	storage := storage.Init(elastic, logger)
+	storage := storage.Init(elastic)
 	err := storage.Repositories.PointRepo.IndexData()
 
 	if err != nil {
