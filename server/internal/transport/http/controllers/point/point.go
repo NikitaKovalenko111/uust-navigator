@@ -19,8 +19,19 @@ func Init(pointService *point_service.PointService) *PointController {
 }
 
 func (c *PointController) RegisterRoutes(router fiber.Router) {
+	router.Get("/all", c.GetAllPoints)
 	router.Get("/:id", c.GetPointById)
 	router.Get("/", c.FindPoints)
+}
+
+func (controller *PointController) GetAllPoints(c *fiber.Ctx) error {
+	points, err := controller.PointService.GetAllPoints()
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(points)
 }
 
 // GetPointById godoc

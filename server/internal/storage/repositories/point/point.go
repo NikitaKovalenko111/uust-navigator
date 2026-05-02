@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"sort"
 	"uust-navigator/internal/domain/models"
 	"uust-navigator/internal/storage/elastic"
 )
@@ -139,4 +140,24 @@ func (r *PointRepo) GetPointById(id string) *models.Point {
 	}
 
 	return &point
+}
+
+func (r *PointRepo) GetAllPoints() ([]models.Point, error) {
+	points := make([]models.Point, 0, len(r.data))
+
+	for _, value := range r.data {
+		points = append(points, models.Point{
+			Id:          value.Id,
+			Description: value.Description,
+			Cabinets:    value.Cabinets,
+			Tags:        value.Tags,
+			Photo:       value.Photo,
+		})
+	}
+
+	sort.Slice(points, func(i, j int) bool {
+		return points[i].Description < points[j].Description
+	})
+
+	return points, nil
 }

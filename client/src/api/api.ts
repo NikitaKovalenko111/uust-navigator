@@ -15,3 +15,9 @@ export const getPath = (start: string, end: string) => {
 
     return res
 }
+
+export const getAllPoints = () => {
+    const res = apiInstance.get('/points/all')
+
+    return res
+}

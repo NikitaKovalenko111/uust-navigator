@@ -6,10 +6,16 @@
   border-radius: $radius-lg;
   box-shadow: $shadow-card;
   padding: 12px;
+  position: relative;
+  z-index: 2;
   align-self: start;
   animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 0.06s;
   transition: box-shadow $transition-base, transform $transition-base;
+}
+
+.route-search:focus-within {
+  z-index: 30;
 }
 
 .route-search__title {
@@ -67,6 +73,7 @@
   box-shadow: 0 8px 24px rgba(42, 20, 104, 0.12);
   max-height: 184px;
   overflow: auto;
+  margin-top: 0;
   z-index: 50;
   opacity: 0;
   transform: translateY(-6px);
@@ -148,4 +155,5 @@
   .route-form {
     gap: 9px;
   }
+
 }

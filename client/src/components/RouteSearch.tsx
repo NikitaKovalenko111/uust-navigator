@@ -6,6 +6,7 @@ import type { RootState } from "../redux/store";
 import { useAppDispatch } from "../hooks";
 import type { PointValue } from "../types/types";
 import { setPath } from "../redux/features/pathSlice";
+import { saveRoute } from "../utils/routesStorage";
 
 export const RouteSearch = () => {
     const [fromValue, setFromValue] = useState<PointValue>({
@@ -62,6 +63,22 @@ export const RouteSearch = () => {
         try {
             const res = await getPath(fromValue.id, targetValue.id)
             dispatch(setPath(res.data))
+
+            try {
+                const entry = {
+                    id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+                    ts: Date.now(),
+                    fromId: fromValue.id,
+                    fromDesc: fromValue.value,
+                    toId: targetValue.id,
+                    toDesc: targetValue.value,
+                    depth: res.data.depth,
+                    path: res.data
+                }
+                saveRoute(entry)
+            } catch (err) {
+                console.warn('Не удалось сохранить маршрут в localStorage', err)
+            }
             
         } catch (error) {
             console.error('Ошибка при получении маршрута:', error)

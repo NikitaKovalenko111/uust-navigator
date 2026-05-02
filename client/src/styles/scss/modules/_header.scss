@@ -46,6 +46,13 @@
   line-height: 1.2;
 }
 
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 .header__action {
   border: 0;
   border-radius: 999px;
@@ -98,5 +105,9 @@
 
   .header__title {
     font-size: 16px;
+  }
+
+  .header__actions {
+    gap: 10px;
   }
 }
