@@ -30,7 +30,7 @@ func (c *PathController) RegisterRoutes(router fiber.Router) {
 //	@Param			start	query		string	true	"id of start point of path"
 //	@Param			end		query		string	true	"id of end point of path"
 //	@Success		200		{object}	models.PathResponse
-//	@Router			/path [get]
+//	@Router			/path/navigate [get]
 func (controller *PathController) FindPath(c *fiber.Ctx) error {
 	startPoint := c.Query("start")
 	endPoint := c.Query("end")

@@ -7,5 +7,5 @@ type Path struct {
 
 type PathResponse struct {
 	Depth     int      `json:"path_depth"`
-	PathArray []string `json:"path"`
+	PathArray []Point `json:"path"`
 }

@@ -3,7 +3,7 @@ definitions:
     properties:
       path:
         items:
-          type: string
+          $ref: '#/definitions/models.Point'
         type: array
       path_depth:
         type: integer
@@ -11,6 +11,8 @@ definitions:
   models.Point:
     properties:
       description:
+        type: string
+      id:
         type: string
       nums:
         items:
@@ -36,7 +38,7 @@ info:
   title: Example API
   version: "0.1"
 paths:
-  /path:
+  /path/navigate:
     get:
       consumes:
       - application/json

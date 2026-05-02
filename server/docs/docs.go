@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/path": {
+        "/path/navigate": {
             "get": {
                 "description": "Finds path by start point and end point",
                 "consumes": [
@@ -125,7 +125,7 @@ const docTemplate = `{
                 "path": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/models.Point"
                     }
                 },
                 "path_depth": {
@@ -137,6 +137,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "nums": {

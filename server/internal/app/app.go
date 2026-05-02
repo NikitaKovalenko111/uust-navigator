@@ -70,8 +70,7 @@ func New(cfg *config.Config) *App {
 	}
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
-		AllowCredentials: true,
+		AllowOrigins: "http://localhost:5173",
 	}))
 	app.Use(swagger.New(swaggerCfg))
 	app.Use(middleware.NewLogger(logger))

@@ -48,20 +48,32 @@ func Init(elastic *elastic.ElasticSearch, logger *slog.Logger) *PointRepo {
 		panic(fmt.Sprintf("%s %s", "Error during unmarshal: ", err.Error()))
 	}
 
+	data := make(map[string]models.Point, len(payload))
+
+	for key, value := range payload {
+		data[key] = models.Point{
+			Id:          key,
+			Description: value.Description,
+			Cabinets:    value.Cabinets,
+			Tags:        value.Tags,
+			Photo:       value.Photo,
+		}
+	}
+
 	return &PointRepo{
-		data:    payload,
+		data:    data,
 		elastic: elastic,
 		logger:  logger,
 	}
 }
 
 func (r *PointRepo) IndexData() error {
-	for i, item := range r.data {
+	for _, item := range r.data {
 		b, _ := json.Marshal(item)
 		res, err := r.elastic.Client.Index(
 			"points",
 			bytes.NewReader(b),
-			r.elastic.Client.Index.WithDocumentID(i),
+			r.elastic.Client.Index.WithDocumentID(item.Id),
 		)
 		if err != nil {
 			return err
@@ -119,6 +131,7 @@ func (r *PointRepo) FindPoints(query string) ([]models.Point, error) {
 
 func (r *PointRepo) GetPointById(id string) *models.Point {
 	var point = models.Point{
+		Id:          r.data[id].Id,
 		Description: r.data[id].Description,
 		Cabinets:    r.data[id].Cabinets,
 		Tags:        r.data[id].Tags,

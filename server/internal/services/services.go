@@ -16,6 +16,6 @@ type Services struct {
 func Init(repos *repositories.Repos, cfg *config.Config) *Services {
 	return &Services{
 		PointService: point_service.Init(repos.PointRepo),
-		PathService:  path_service.Init(repos.PathRepo),
+		PathService:  path_service.Init(repos.PathRepo, repos.PointRepo),
 	}
 }

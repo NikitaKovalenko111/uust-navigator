@@ -1,0 +1,151 @@
+@use '../variables' as *;
+
+.route-search {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: 12px;
+  align-self: start;
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.06s;
+  transition: box-shadow $transition-base, transform $transition-base;
+}
+
+.route-search__title {
+  font-family: $font-display;
+  font-size: 17px;
+  color: $color-brand;
+  margin-bottom: 10px;
+}
+
+.route-form {
+  display: grid;
+  gap: 8px;
+}
+
+.route-form__field {
+  display: grid;
+  gap: 5px;
+  position: relative; /* for absolutely positioned dropdown */
+}
+
+.route-form__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-text-muted;
+}
+
+.route-form__input {
+  width: 100%;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  padding: 9px 12px;
+  min-height: 44px;
+  color: $color-text;
+  background: $color-surface;
+  transition: border-color $transition-fast, background-color $transition-fast, box-shadow $transition-base;
+}
+
+.route-form__input:focus-visible {
+  border-color: rgba(77, 25, 204, 0.45);
+  box-shadow: 0 0 0 3px rgba(77, 25, 204, 0.12);
+  outline: 2px solid rgba(42, 20, 104, 0.4);
+  outline-offset: 1px;
+}
+
+.route-form__suggestions {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 8px 24px rgba(42, 20, 104, 0.12);
+  max-height: 184px;
+  overflow: auto;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity $transition-fast, transform $transition-fast;
+}
+
+.route-form__field:focus-within .route-form__suggestions {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.route-form__suggestion-btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: $color-text;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  display: block;
+  cursor: pointer;
+  transition: background-color $transition-fast, transform $transition-fast;
+}
+
+.route-form__submit {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-height: 44px;
+  background: $color-brand;
+  color: $color-white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform $transition-fast, box-shadow $transition-base, background-color $transition-fast;
+}
+
+.route-form__submit:focus-visible,
+.route-form__suggestion-btn:focus-visible {
+  outline: 2px solid rgba(77, 25, 204, 0.35);
+  outline-offset: 2px;
+}
+
+.route-form__error {
+  margin: 2px 0 0;
+  color: #bf1d42;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .route-search:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-card-hover;
+  }
+
+  .route-form__suggestion-btn:hover {
+    transform: translateY(-1px);
+    background: #d9cef9;
+  }
+
+  .route-form__submit:hover {
+    transform: translateY(-1px);
+    background: #4016ad;
+    box-shadow: 0 10px 22px rgba(42, 20, 104, 0.28);
+  }
+}
+
+@media (min-width: $bp-tablet) {
+  .route-search {
+    padding: 12px;
+  }
+
+  .route-search__title {
+    font-size: 18px;
+  }
+
+  .route-form {
+    gap: 9px;
+  }
+}
