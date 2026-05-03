@@ -25,9 +25,10 @@ export const pathSlice = createSlice({
     setCurrentStep: (state, action: PayloadAction<number>) => {
       state.currentStep = action.payload
     },
+    fetchPath: (_state, _action: PayloadAction<{startId: string, endId: string}>) => {}
   },
 })
 
-export const { setPath, setCurrentStep } = pathSlice.actions
+export const { setPath, setCurrentStep, fetchPath } = pathSlice.actions
 
 export default pathSlice.reducer

@@ -3,10 +3,12 @@ import type { Point } from '../../types/types'
 
 interface PointState {
   foundPoints: Point[]
+  currentPoint: Point | null
 }
 
 const initialState: PointState = {
-  foundPoints: []
+  foundPoints: [],
+  currentPoint: null
 }
 
 export const pointSlice = createSlice({
@@ -14,11 +16,17 @@ export const pointSlice = createSlice({
   initialState,
   reducers: {
     setPoints: (state, action: PayloadAction<Point[]>) => {
-        state.foundPoints = action.payload
+      state.foundPoints = action.payload
     },
+    setCurrentPoint: (state, action: PayloadAction<Point>) => {
+      state.currentPoint = action.payload
+    },
+    fetchPoints: (_state, _action: PayloadAction<string>) => {},
+    fetchPointById: (_state, _action: PayloadAction<string>) => {},
+    fetchAllPoints: (_state, _action: PayloadAction<{setLoading: (value: boolean) => void, setError: (value: string) => void, mounted: boolean}>) => {}
   },
 })
 
-export const { setPoints } = pointSlice.actions
+export const { setPoints, setCurrentPoint, fetchPoints, fetchPointById, fetchAllPoints } = pointSlice.actions
 
 export default pointSlice.reducer

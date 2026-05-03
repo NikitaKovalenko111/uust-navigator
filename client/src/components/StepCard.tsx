@@ -1,41 +1,21 @@
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../redux/store";
-import type { Point } from "../types/types";
 import { useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { apiInstance } from "../api/api";
 import { setCurrentStep } from "../redux/features/pathSlice";
 import cn from 'classnames'
+import { fetchPointById } from "../redux/features/pointSlice";
 
 export const StepCard = () => {
   const path = useSelector((state: RootState) => state.pathReducer.currentPath)
   const step = useSelector((state: RootState) => state.pathReducer.currentStep)
   const dispatch = useDispatch()
 
-  const [currentPoint, setCurrentPoint] = useState<Point | null>(null)
+  const currentPoint = useSelector((state: RootState) => state.pointReducer.currentPoint)
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   const getCurrentPointHandler = async (pointId: string) => {
-    try {
-      const res = await apiInstance.get(`/points/${pointId}`)
-
-      const dataUrl = res.data.photo_base64 ? `data:image/png;base64,${res.data.photo_base64}` : ''
-      
-      setCurrentPoint({
-        id: res.data.point.id,
-        description: res.data.point.description,
-        nums: res.data.point.nums,
-        tags: res.data.point.tags,
-        photo: res.data.point.photo,
-        photoBase64: dataUrl
-      })
-    } catch (error) {
-      console.error('Ошибка при загрузке фото точки:', error)
-      // Set point without photo if error
-      if (path.length > 0) {
-        setCurrentPoint(path[step - 1])
-      }
-    }
+    dispatch(fetchPointById(pointId))
   }
 
   const handleNextStep = useCallback(() => {

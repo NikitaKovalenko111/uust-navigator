@@ -1,12 +1,10 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { findPoints, getPath } from "../api/api";
-import { setPoints } from "../redux/features/pointSlice";
+import { fetchPoints, setPoints } from "../redux/features/pointSlice";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { useAppDispatch } from "../hooks";
 import type { PointValue } from "../types/types";
-import { setPath } from "../redux/features/pathSlice";
-import { saveRoute } from "../utils/routesStorage";
+import { fetchPath } from "../redux/features/pathSlice";
 
 export const RouteSearch = () => {
     const [fromValue, setFromValue] = useState<PointValue>({
@@ -45,9 +43,7 @@ export const RouteSearch = () => {
     }
 
     const findPointsHandler = async (fromValue: string, targetValue: string, currentFocus: "nothing" | "to" | "from") => {
-        const res = await findPoints(currentFocus == "from" ? fromValue : targetValue)
-
-        dispatch(setPoints(res.data))
+        dispatch(fetchPoints(currentFocus == "from" ? fromValue : targetValue))
     }
 
     const getPathHandler = async (e: FormEvent<HTMLFormElement>) => {
@@ -61,25 +57,10 @@ export const RouteSearch = () => {
         setFormError("")
         
         try {
-            const res = await getPath(fromValue.id, targetValue.id)
-            dispatch(setPath(res.data))
-
-            try {
-                const entry = {
-                    id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-                    ts: Date.now(),
-                    fromId: fromValue.id,
-                    fromDesc: fromValue.value,
-                    toId: targetValue.id,
-                    toDesc: targetValue.value,
-                    depth: res.data.depth,
-                    path: res.data
-                }
-                saveRoute(entry)
-            } catch (err) {
-                console.warn('Не удалось сохранить маршрут в localStorage', err)
-            }
-            
+            dispatch(fetchPath({
+                startId: fromValue.id,
+                endId: targetValue.id
+            }))          
         } catch (error) {
             console.error('Ошибка при получении маршрута:', error)
         }
@@ -87,7 +68,7 @@ export const RouteSearch = () => {
 
     useEffect(() => {
         findPointsHandler(fromValue.value, targetValue.value, currentFocus)
-    }, [fromValue, targetValue]) 
+    }, [fromValue, targetValue, currentFocus]) 
 
     return (
         <section className="route-search" aria-labelledby="route-search-title">
@@ -122,6 +103,7 @@ export const RouteSearch = () => {
                                         id: p.id,
                                         value: p.description
                                     })
+                                    dispatch(setPoints([]))
                                 }} className="route-form__suggestion-btn" type="button">{p.description}</button>
                             </li>
                         )
@@ -160,6 +142,7 @@ export const RouteSearch = () => {
                                         id: p.id,
                                         value: p.description
                                     })
+                                    dispatch(setPoints([]))
                                 }} className="route-form__suggestion-btn" type="button">{p.description}</button>
                             </li>
                         )

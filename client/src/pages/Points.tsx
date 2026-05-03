@@ -1,58 +1,47 @@
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { getAllPoints } from "../api/api";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { Footer } from "../components/common/Footer";
 import { Header } from "../components/common/Header";
-import type { Point } from "../types/types";
-
-const includesNormalized = (value: string, query: string) =>
-  value.toLowerCase().includes(query);
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+import { useAppDispatch } from "../hooks";
+import { fetchAllPoints, fetchPoints } from "../redux/features/pointSlice";
 
 export const PointsPage = () => {
-  const [points, setPoints] = useState<Point[]>([]);
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const points = useSelector((state: RootState) => state.pointReducer.foundPoints)
+  const [query, setQuery] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
 
     const loadPoints = async () => {
-      setLoading(true);
-      setError("");
-
-      try {
-        const res = await getAllPoints();
-        if (!mounted) return;
-        setPoints(Array.isArray(res.data) ? res.data : []);
-      } catch (err) {
-        console.error("Ошибка загрузки точек:", err);
-        if (!mounted) return;
-        setError("Не удалось загрузить точки. Попробуйте позже.");
-      } finally {
-        if (mounted) setLoading(false);
+      if (query == "") {
+        dispatch(fetchAllPoints({
+          setLoading: setLoading,
+          setError: setError,
+          mounted: mounted
+        }))
+      } else {
+        try {
+          setLoading(true)
+          await dispatch(fetchPoints(query))
+        } catch (err) {
+          setError("Не удалось получить точки")
+        } finally {
+          setLoading(false)
+        }
       }
-    };
+    }
 
-    loadPoints();
+    loadPoints()
 
     return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const normalizedQuery = query.trim().toLowerCase();
-
-  const filteredPoints = useMemo(() => {
-    if (!normalizedQuery) return points;
-
-    return points.filter((point) => {
-      const inDescription = includesNormalized(point.description, normalizedQuery);
-      const inNums = point.nums.some((num) => includesNormalized(num, normalizedQuery));
-      const inTags = point.tags.some((tag) => includesNormalized(tag, normalizedQuery));
-
-      return inDescription || inNums || inTags;
-    });
-  }, [points, normalizedQuery]);
+      mounted = false
+    }
+  }, [query])
 
   const handleQueryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -67,7 +56,7 @@ export const PointsPage = () => {
           <div className="points-panel__head">
             <h1 className="points-panel__title">Все точки</h1>
             <p className="points-panel__meta">
-              {loading ? "Загрузка..." : `Найдено: ${filteredPoints.length}`}
+              {loading ? "Загрузка..." : `Найдено: ${points.length}`}
             </p>
           </div>
 
@@ -87,11 +76,11 @@ export const PointsPage = () => {
 
           {!loading && !error && (
             <ul className="points-list" aria-label="Список точек">
-              {filteredPoints.length === 0 && (
+              {points.length === 0 && (
                 <li className="points-list__empty">Ничего не найдено по вашему запросу.</li>
               )}
 
-              {filteredPoints.map((point) => (
+              {points.map((point) => (
                 <li key={point.id} className="points-list__item">
                   <h2 className="points-list__title">{point.description}</h2>
                   <p className="points-list__id">ID: {point.id}</p>
